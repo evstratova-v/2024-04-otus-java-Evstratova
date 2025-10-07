@@ -48,7 +48,21 @@ public class DataController {
                 .doOnNext(room -> log.info("getMessagesByRoomId, room:{}", room))
                 .flatMapMany(dataStore::loadMessages)
                 .map(message -> new MessageDto(message.msgText()))
-                .doOnNext(msgDto -> log.info("msgDto:{}", msgDto))
+                .doOnNext(this::logMsgDto)
                 .subscribeOn(workerPool);
+    }
+
+    @GetMapping(value = "/msg", produces = MediaType.APPLICATION_NDJSON_VALUE)
+    public Flux<MessageDto> getMessages() {
+        log.info("getMessages all rooms");
+        return dataStore
+                .loadMessages()
+                .map(message -> new MessageDto(message.msgText()))
+                .doOnNext(this::logMsgDto)
+                .subscribeOn(workerPool);
+    }
+
+    private void logMsgDto(MessageDto msgDto) {
+        log.info("msgDto:{}", msgDto);
     }
 }

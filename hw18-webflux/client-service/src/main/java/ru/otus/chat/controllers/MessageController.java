@@ -22,6 +22,7 @@ public class MessageController {
     private static final Logger logger = LoggerFactory.getLogger(MessageController.class);
 
     private static final String TOPIC_TEMPLATE = "/topic/response.";
+    private static final String ROOM_1408 = "1408";
 
     private final WebClient datastoreClient;
     private final SimpMessagingTemplate template;
@@ -33,11 +34,16 @@ public class MessageController {
 
     @MessageMapping("/message.{roomId}")
     public void getMessage(@DestinationVariable("roomId") String roomId, Message message) {
-        logger.info("get message:{}, roomId:{}", message, roomId);
-        saveMessage(roomId, message).subscribe(msgId -> logger.info("message send id:{}", msgId));
+        if (!roomId.equals(ROOM_1408)) {
+            logger.info("get message:{}, roomId:{}", message, roomId);
+            saveMessage(roomId, message).subscribe(msgId -> logger.info("message send id:{}", msgId));
 
-        template.convertAndSend(
-                String.format("%s%s", TOPIC_TEMPLATE, roomId), new Message(HtmlUtils.htmlEscape(message.messageStr())));
+            var payload = new Message(HtmlUtils.htmlEscape(message.messageStr()));
+            template.convertAndSend(String.format("%s%s", TOPIC_TEMPLATE, roomId), payload);
+            template.convertAndSend(String.format("%s%s", TOPIC_TEMPLATE, ROOM_1408), payload);
+        } else {
+            logger.info("get message from roomId {} is not allowed", roomId);
+        }
     }
 
     @EventListener
@@ -84,9 +90,10 @@ public class MessageController {
     }
 
     private Flux<Message> getMessagesByRoomId(long roomId) {
+        String uri = Long.toString(roomId).equals(ROOM_1408) ? "/msg" : "/msg/%s".formatted(roomId);
         return datastoreClient
                 .get()
-                .uri(String.format("/msg/%s", roomId))
+                .uri(uri)
                 .accept(MediaType.APPLICATION_NDJSON)
                 .exchangeToFlux(response -> {
                     if (response.statusCode().equals(HttpStatus.OK)) {
