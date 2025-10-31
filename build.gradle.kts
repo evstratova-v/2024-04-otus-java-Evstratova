@@ -69,6 +69,8 @@ allprojects {
             force("org.codehaus.jackson:jackson-core-asl:1.8.8")
             force("org.codehaus.jackson:jackson-mapper-asl:1.8.8")
             force("commons-io:commons-io:2.18.0")
+            force("com.nimbusds:nimbus-jose-jwt:9.47")
+            force("org.apiguardian:apiguardian-api:1.1.2")
         }
     }
 }

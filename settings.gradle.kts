@@ -18,6 +18,9 @@ include("hw16-concurrentCollections")
 include("hw17-grpc")
 include("hw18-webflux:client-service")
 include("hw18-webflux:datastore-service")
+include("project:coffee-order-service")
+include("project:coffee-roast-service")
+include("project:auth-service")
 
 
 pluginManagement {
