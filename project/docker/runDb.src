@@ -1,0 +1,20 @@
+docker run --rm --name pg-docker-auth \
+-e POSTGRES_PASSWORD=pwd \
+-e POSTGRES_USER=usr \
+-e POSTGRES_DB=dbAuth \
+-p 5430:5432 \
+postgres:16
+
+docker run --rm --name pg-docker \
+-e POSTGRES_PASSWORD=pwd \
+-e POSTGRES_USER=usr \
+-e POSTGRES_DB=orderDB \
+-p 5431:5432 \
+postgres:16
+
+docker run --rm --name pg-docker-roast \
+-e POSTGRES_PASSWORD=pwd \
+-e POSTGRES_USER=usr \
+-e POSTGRES_DB=roastDB \
+-p 5433:5432 \
+postgres:16
